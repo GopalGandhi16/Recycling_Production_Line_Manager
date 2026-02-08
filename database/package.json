@@ -1,0 +1,21 @@
+{
+  "name": "recycling-manager-database",
+  "version": "1.0.0",
+  "description": "Database setup and data generation using Faker.js",
+  "main": "generate_candidates.js",
+  "scripts": {
+    "generate": "node generate_candidates.js",
+    "setup": "echo 'Please run schema.sql in MySQL first, then run: npm run generate'"
+  },
+  "keywords": [
+    "faker",
+    "database",
+    "mysql",
+    "data-generation"
+  ],
+  "dependencies": {
+    "@faker-js/faker": "^8.3.1",
+    "mysql2": "^3.6.5",
+    "dotenv": "^16.3.1"
+  }
+}
