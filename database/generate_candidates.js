@@ -2,47 +2,21 @@ const { faker } = require('@faker-js/faker');
 const mysql = require('mysql2/promise');
 require('dotenv').config({ path: '../backend/.env' });
 
-// Skills pool for recycling manager
-const skillsPool = [
-  'Waste Management', 'Team Leadership', 'ISO 14001', 'Lean Manufacturing',
-  'Recycling Operations', 'Process Optimization', 'Safety Compliance',
-  'Quality Control', 'Sustainability Planning', 'Staff Training',
-  'Equipment Maintenance', 'Budget Management', 'Environmental Regulations',
-  'Crisis Response', 'Stakeholder Management', 'Strategic Planning',
-  'Production Scheduling', 'Resource Allocation', 'Six Sigma',
-  'Continuous Improvement', 'Recycling Technology', 'Team Motivation',
-  'Performance Metrics', 'Vendor Relations', 'Waste Sorting',
-  'Health & Safety', 'Logistics Coordination', 'Data Analysis',
-  'Circular Economy', 'Change Management', 'Budget Control',
-  'Training Development', 'Production Line Management',
-  'Sustainability Reporting', 'Risk Assessment', 'Process Engineering',
-  'Environmental Compliance', 'Team Building', 'Cost Reduction',
-  'Innovation Management', 'Recycling Processes', 'Problem Solving',
-  'Inventory Management', 'Quality Assurance', 'Waste Stream Analysis',
-  'Leadership Development', 'Green Technologies', 'Project Management',
-  'Operations Management', 'Communication Skills', 'Equipment Optimization',
-  'Safety Protocols', 'Material Recovery', 'Conflict Resolution',
-  'Performance Monitoring', 'Resource Planning', 'Environmental Systems',
-  'Team Coordination', 'Regulatory Compliance', 'Efficiency Improvement'
-];
+// Import mock AI (we'll create this)
+const mockAI = require('../backend/utils/mockAI');
 
-// Generate random skills
-function generateSkills() {
-  const numSkills = faker.number.int({ min: 3, max: 6 });
-  const selectedSkills = faker.helpers.arrayElements(skillsPool, numSkills);
-  return selectedSkills.join(', ');
-}
+// ... (keep existing skillsPool and generateSkills functions)
 
-// Generate random scores
-function generateScores() {
-  return {
-    crisis_management: faker.number.int({ min: 5, max: 10 }),
-    sustainability: faker.number.int({ min: 5, max: 10 }),
-    team_motivation: faker.number.int({ min: 5, max: 10 })
-  };
-}
+// REMOVE THIS OLD FUNCTION:
+// function generateScores() {
+//   return {
+//     crisis_management: faker.number.int({ min: 5, max: 10 }),
+//     sustainability: faker.number.int({ min: 5, max: 10 }),
+//     team_motivation: faker.number.int({ min: 5, max: 10 })
+//   };
+// }
 
-// Generate candidates
+// Generate candidates WITHOUT scores (AI will evaluate them)
 function generateCandidates(count = 40) {
   const candidates = [];
   
@@ -53,15 +27,14 @@ function generateCandidates(count = 40) {
     candidates.push({
       name: `${firstName} ${lastName}`,
       experience: faker.number.int({ min: 3, max: 15 }),
-      skills: generateSkills(),
-      scores: generateScores()
+      skills: generateSkills()
+      // No scores here - AI will generate them
     });
   }
   
   return candidates;
 }
 
-// Insert into database
 async function insertData() {
   let connection;
   
@@ -87,8 +60,8 @@ async function insertData() {
     await connection.query('DELETE FROM candidates');
     await connection.query('ALTER TABLE candidates AUTO_INCREMENT = 1');
 
-    // Insert candidates
-    console.log('💾 Inserting candidates...');
+    // Insert candidates and use MOCK AI to evaluate them
+    console.log('🤖 Using Mock AI to evaluate candidates...');
     for (const candidate of candidates) {
       const [result] = await connection.query(
         'INSERT INTO candidates (name, experience, skills) VALUES (?, ?, ?)',
@@ -96,14 +69,23 @@ async function insertData() {
       );
 
       const candidateId = result.insertId;
+      
+      // Create candidate object with ID for AI evaluation
+      const candidateWithId = { ...candidate, id: candidateId };
 
+      // 🤖 USE MOCK AI TO GENERATE SCORES
+      const aiEvaluation = mockAI.evaluateCandidate(candidateWithId);
+
+      // Insert AI-generated evaluation
       await connection.query(
         'INSERT INTO evaluations (candidate_id, crisis_management, sustainability, team_motivation) VALUES (?, ?, ?, ?)',
-        [candidateId, candidate.scores.crisis_management, candidate.scores.sustainability, candidate.scores.team_motivation]
+        [candidateId, aiEvaluation.crisis_management, aiEvaluation.sustainability, aiEvaluation.team_motivation]
       );
+      
+      console.log(`   ✓ ${candidate.name}: Crisis=${aiEvaluation.crisis_management}, Sustainability=${aiEvaluation.sustainability}, Motivation=${aiEvaluation.team_motivation}`);
     }
 
-    console.log('✅ All candidates and evaluations inserted');
+    console.log('✅ All candidates evaluated by Mock AI');
 
     // Generate rankings
     console.log('📈 Generating rankings...');
@@ -136,17 +118,17 @@ async function insertData() {
       LIMIT 5
     `);
 
-    console.log('\n🏆 TOP 5 CANDIDATES:');
+    console.log('\n🏆 TOP 5 CANDIDATES (Evaluated by Mock AI):');
     console.log('═══════════════════════════════════════════════════════════');
     top5.forEach((candidate, index) => {
       console.log(`${index + 1}. ${candidate.name}`);
       console.log(`   Experience: ${candidate.experience} years`);
-      console.log(`   Scores: Crisis=${candidate.crisis_management}, Sustainability=${candidate.sustainability}, Motivation=${candidate.team_motivation}`);
+      console.log(`   🤖 AI Scores: Crisis=${candidate.crisis_management}, Sustainability=${candidate.sustainability}, Motivation=${candidate.team_motivation}`);
       console.log(`   Total: ${candidate.total_score}/30 | Rank: #${candidate.rank_position}`);
       console.log('───────────────────────────────────────────────────────────');
     });
 
-    console.log('\n✨ Data generation complete!');
+    console.log('\n✨ Mock AI evaluation complete!');
     console.log('🚀 You can now start your backend and frontend servers\n');
 
   } catch (error) {
@@ -159,5 +141,4 @@ async function insertData() {
   }
 }
 
-// Run
 insertData();
