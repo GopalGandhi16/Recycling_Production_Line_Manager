@@ -69,7 +69,6 @@ Easily replaceable with real AI APIs
 
 Built as an internship assignment
 
-Author
-Gopal Gandhi
-GitHub: https://github.com/GopalGandhi16
+
+
 
