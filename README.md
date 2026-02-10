@@ -1,9 +1,6 @@
 # Recycling Production Line Manager Selection System
 
 *A practical candidate evaluation dashboard I built for an internship assignment*
-
-![Dashboard]("C:\Users\Asus\Pictures\Screenshots\Screenshot 2026-02-10 204208.png")
-
 ---
 
 ## What This Does
