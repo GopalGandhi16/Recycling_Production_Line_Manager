@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 
-// Get all candidates with their evaluations and rankings
+
 router.get('/all', async (req, res) => {
     try {
         const [rows] = await db.query(`
@@ -36,7 +36,6 @@ router.get('/all', async (req, res) => {
     }
 });
 
-// Get top 10 candidates (leaderboard)
 router.get('/leaderboard', async (req, res) => {
     try {
         const [rows] = await db.query(`
@@ -71,7 +70,6 @@ router.get('/leaderboard', async (req, res) => {
     }
 });
 
-// Get single candidate by ID
 router.get('/:id', async (req, res) => {
     try {
         const [rows] = await db.query(`

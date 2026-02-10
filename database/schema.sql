@@ -1,13 +1,11 @@
--- Create database
+
 CREATE DATABASE IF NOT EXISTS recycling_manager_db;
 USE recycling_manager_db;
 
--- Drop existing tables if they exist
 DROP TABLE IF EXISTS rankings;
 DROP TABLE IF EXISTS evaluations;
 DROP TABLE IF EXISTS candidates;
 
--- Create candidates table
 CREATE TABLE candidates (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -16,7 +14,6 @@ CREATE TABLE candidates (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create evaluations table
 CREATE TABLE evaluations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     candidate_id INT NOT NULL,
@@ -29,7 +26,6 @@ CREATE TABLE evaluations (
     UNIQUE KEY unique_candidate_evaluation (candidate_id)
 );
 
--- Create rankings table
 CREATE TABLE rankings (
     id INT AUTO_INCREMENT PRIMARY KEY,
     candidate_id INT NOT NULL,
@@ -39,7 +35,5 @@ CREATE TABLE rankings (
     FOREIGN KEY (candidate_id) REFERENCES candidates(id) ON DELETE CASCADE,
     UNIQUE KEY unique_candidate_ranking (candidate_id)
 );
-
--- Create indexes for faster queries
 CREATE INDEX idx_rank_position ON rankings(rank_position);
 CREATE INDEX idx_total_score ON rankings(total_score DESC);
