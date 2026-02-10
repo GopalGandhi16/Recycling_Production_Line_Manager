@@ -62,13 +62,13 @@ GET /api/health
 GET /api/candidates/all
 GET /api/candidates/leaderboard
 GET /api/candidates/:id
+
+
 Notes
 Uses a logic-based Mock AI for scoring
-
 Easily replaceable with real AI APIs
-
 Built as an internship assignment
 
-
-
-
+Author
+Gopal Gandhi
+GitHub: https://github.com/GopalGandhi16
